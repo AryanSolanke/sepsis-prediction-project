@@ -1,0 +1,27 @@
+# 1. Your Datasets (The most important rule!)
+# Prevents GitHub from crashing due to massive CSV/PSV files
+Datasets/
+
+# 2. Python Virtual Environments
+# Prevents uploading thousands of installed libraries (like pandas/numpy)
+venv/
+.venv/
+env/
+
+# 3. Python Cache
+# Ignores hidden compiled files that Python makes automatically
+__pycache__/
+*.pyc
+
+# 4. Jupyter Notebook Checkpoints
+# Ignores the hidden auto-save files Jupyter creates while you work
+.ipynb_checkpoints/
+
+# 5. IDE and OS Files
+# Keeps your repo clean from VS Code settings or Mac/Windows system files
+.vscode/
+.DS_Store
+
+# 6. Passwords and Secrets (Good habit for the future)
+# If you ever use an API key or password later, you'd put it in a .env file
+.env
