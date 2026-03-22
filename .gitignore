@@ -218,3 +218,12 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# Node / Frontend
+node_modules/
+.npm
+/apps/sepsis_dashboard/frontend/dist/
+/apps/sepsis_dashboard/frontend/build/
+*.log
+.eslintcache
