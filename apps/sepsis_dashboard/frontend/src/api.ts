@@ -5,7 +5,14 @@ type AppConfig = {
 };
 
 function getConfig(): AppConfig {
-  return (window as any).__APP_CONFIG__;
+  const runtimeConfig = (window as any).__APP_CONFIG__ ?? {};
+  const baseUrl = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, "");
+
+  return {
+    appName: runtimeConfig.appName || "sepsis_dashboard",
+    dataEndpoint: runtimeConfig.dataEndpoint || `${baseUrl}/rpc`,
+    runId: runtimeConfig.runId || "",
+  };
 }
 
 type RpcParams = {
