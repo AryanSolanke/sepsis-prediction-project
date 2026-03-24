@@ -227,3 +227,8 @@ node_modules/
 /apps/sepsis_dashboard/frontend/build/
 *.log
 .eslintcache
+
+# Local model artifacts / caches
+/models/
+/model_training/models/
+*.joblib
