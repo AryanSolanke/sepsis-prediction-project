@@ -37,11 +37,10 @@ model = XGBClassifier(
     max_depth=6,
     scale_pos_weight=ratio, 
     random_state=42,
-    use_label_encoder=False,
-    eval_metric='logloss',
-    n_jobs=-1
+        use_label_encoder=False,
+        eval_metric='logloss',
+        n_jobs=-1
 )
-
 model.fit(X_train, y_train)
 
 # 3. Evaluation
@@ -53,7 +52,7 @@ print(classification_report(y_test, y_pred))
 print(f"ROC AUC Score: {roc_auc_score(y_test, y_probs):.4f}")
 
 # 4. Save model and feature list
-joblib.dump(model, "models/sepsis_xgb_model.joblib")
-joblib.dump(features, "models/feature_names.joblib")
+joblib.dump(model, "models/sepsis_xgb.joblib")
+joblib.dump(features, "models/xgb_feature_names.joblib")
 
 print("\nXGBoost Model and feature names saved to 'models/'")

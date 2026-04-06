@@ -1,0 +1,17 @@
+{
+  "test_rows": 310441,
+  "positive_cases": 5508,
+  "positive_rate": 0.01774250179583238,
+  "predicted_positive_rate": 0.10519873341472293,
+  "roc_auc": 0.9270283461509043,
+  "average_precision": 0.37277746822657143,
+  "brier_score": 0.10754646550631278,
+  "precision_at_0_50": 0.13506644620001224,
+  "recall_at_0_50": 0.8008351488743646,
+  "f1_at_0_50": 0.23114814232563013,
+  "specificity_at_0_50": 0.9073665362555053,
+  "true_negatives": 276686,
+  "false_positives": 28247,
+  "false_negatives": 1097,
+  "true_positives": 4411
+}

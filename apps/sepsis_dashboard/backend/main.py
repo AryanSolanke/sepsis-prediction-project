@@ -17,7 +17,7 @@ from sklearn.model_selection import GroupShuffleSplit
 BACKEND_DIR = Path(__file__).resolve().parent
 REPO_ROOT = BACKEND_DIR.parents[2]
 DATA_PATH = REPO_ROOT / "Datasets" / "processed" / "sepsis_icu_cleaned.csv"
-MODEL_PATH = REPO_ROOT / "model_training" / "models" / "sepsis_xgb_model.joblib"
+MODEL_PATH = REPO_ROOT / "model_training" / "models" / "sepsis_rf_physionet_best.joblib"
 FEATURES_PATH = REPO_ROOT / "model_training" / "models" / "feature_names.joblib"
 
 _CACHED_DF: pd.DataFrame | None = None
