@@ -225,7 +225,7 @@ __marimo__/
 node_modules/
 .npm
 .parcel-cache/
-/apps/sepsis_dashboard/frontend/dist/
+# /apps/sepsis_dashboard/frontend/dist/
 /apps/sepsis_dashboard/frontend/build/
 *.log
 .eslintcache
