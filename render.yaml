@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: sepsis-prediction
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m apps.sepsis_dashboard.backend.main
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: SEPSIS_BACKEND_HOST
+        value: 0.0.0.0
