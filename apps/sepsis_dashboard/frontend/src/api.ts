@@ -6,7 +6,7 @@ type AppConfig = {
 
 function getConfig(): AppConfig {
   const runtimeConfig = (window as any).__APP_CONFIG__ ?? {};
-  const backendUrl = (window as any).__BACKEND_URL__ ?? "http://localhost:8000";
+  const backendUrl = (window as any).__BACKEND_URL__ ?? "";
   const baseUrl = `${backendUrl}/api`;
 
   return {

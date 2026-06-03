@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import mimetypes
 import os
 from http import HTTPStatus
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -17,6 +18,7 @@ from sklearn.model_selection import GroupShuffleSplit
 BACKEND_DIR = Path(__file__).resolve().parent
 REPO_ROOT = BACKEND_DIR.parents[2]
 CACHE_DIR = REPO_ROOT / "model_training" / "cache"
+FRONTEND_DIST_DIR = BACKEND_DIR.parent / "frontend" / "dist"
 DATA_PATH_CANDIDATES = (
     REPO_ROOT / "Datasets" / "processed" / "sepsis_icu_engineered.csv",
     REPO_ROOT / "Datasets" / "processed" / "sepsis_icu_cleaned.csv",
@@ -350,8 +352,10 @@ def _load_saved_metrics() -> dict[str, Any] | None:
     return _CACHED_METRICS
 
 
-def _get_feature_frame() -> pd.DataFrame:
+def _get_feature_frame() -> pd.DataFrame | None:
     df = _load_data()
+    if df is None:
+        return None
     _, features, _ = _load_model_and_features()
 
     missing_features = [feature for feature in features if feature not in df.columns]
@@ -865,27 +869,28 @@ def predict_sepsis(patient_data: dict[str, Any]) -> dict[str, Any]:
             risk_level = "High"
 
         contributors: list[dict[str, Any]] = []
-        means = feature_frame.mean(numeric_only=True)
-        stds = feature_frame.std(numeric_only=True).replace(0, 1.0)
+        if feature_frame is not None:
+            means = feature_frame.mean(numeric_only=True)
+            stds = feature_frame.std(numeric_only=True).replace(0, 1.0)
 
-        for feature, importance in zip(features, model.feature_importances_):
-            current_value = float(input_frame.at[0, feature])
-            mean = float(means.get(feature, 0.0))
-            std = float(stds.get(feature, 1.0))
-            z_score = abs(current_value - mean) / std if std > 0 and np.isfinite(current_value) else 0.0
-            contribution = float(importance * z_score)
-            if not np.isfinite(contribution):
-                contribution = 0.0
+            for feature, importance in zip(features, model.feature_importances_):
+                current_value = float(input_frame.at[0, feature])
+                mean = float(means.get(feature, 0.0))
+                std = float(stds.get(feature, 1.0))
+                z_score = abs(current_value - mean) / std if std > 0 and np.isfinite(current_value) else 0.0
+                contribution = float(importance * z_score)
+                if not np.isfinite(contribution):
+                    contribution = 0.0
 
-            contributors.append(
-                {
-                    "feature": feature,
-                    "value": round(current_value, 2) if np.isfinite(current_value) else None,
-                    "contribution_score": contribution,
-                }
-            )
+                contributors.append(
+                    {
+                        "feature": feature,
+                        "value": round(current_value, 2) if np.isfinite(current_value) else None,
+                        "contribution_score": contribution,
+                    }
+                )
 
-        contributors.sort(key=lambda item: item["contribution_score"], reverse=True)
+            contributors.sort(key=lambda item: item["contribution_score"], reverse=True)
 
         result = {
             "sepsis_probability": probability,
@@ -974,6 +979,30 @@ class SepsisRequestHandler(BaseHTTPRequestHandler):
         self.send_response(HTTPStatus.NO_CONTENT)
         self.end_headers()
 
+    def _serve_static(self, path: str) -> None:
+        if not FRONTEND_DIST_DIR.exists():
+            self._send_json(HTTPStatus.NOT_FOUND, {"error": "Frontend not built."})
+            return
+
+        clean = path.lstrip("/") or "index.html"
+        file_path = FRONTEND_DIST_DIR / clean
+        if not file_path.exists():
+            file_path = FRONTEND_DIST_DIR / "index.html"
+        if not file_path.exists() or not file_path.is_relative_to(FRONTEND_DIST_DIR):
+            self._send_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
+            return
+
+        mime_type, _ = mimetypes.guess_type(str(file_path))
+        if mime_type is None:
+            mime_type = "application/octet-stream"
+
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", mime_type)
+        self.send_header("Content-Length", str(file_path.stat().st_size))
+        self.end_headers()
+        with open(file_path, "rb") as f:
+            self.wfile.write(f.read())
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         params = parse_qs(parsed.query)
@@ -1004,11 +1033,7 @@ class SepsisRequestHandler(BaseHTTPRequestHandler):
                 )
                 return
 
-            _log(f"GET {parsed.path} - not found")
-            self._send_json(
-                HTTPStatus.NOT_FOUND,
-                {"error": f"Route '{parsed.path}' was not found."},
-            )
+            self._serve_static(parsed.path)
         except Exception as exc:
             _log(f"GET error: {exc}")
             self._handle_exception(exc)
