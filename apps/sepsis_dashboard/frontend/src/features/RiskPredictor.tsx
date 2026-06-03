@@ -42,6 +42,7 @@ type PredictionSchema = {
   model_name: string;
   feature_count: number;
   primary_feature_count: number;
+  derived_feature_count: number;
   measurement_flag_count: number;
   input_groups: PredictionGroup[];
   fields: PredictionField[];
@@ -219,7 +220,7 @@ export function RiskPredictor() {
                   <div className="text-left md:text-right">
                     <div className="text-2xl font-bold font-heading">{schema.feature_count}</div>
                     <p className="text-xs text-muted-foreground">
-                      {schema.primary_feature_count} direct inputs + {schema.measurement_flag_count} auto-derived flags
+                      {schema.primary_feature_count} direct inputs + {schema.derived_feature_count} derived clinical features + {schema.measurement_flag_count} measured flags
                     </p>
                   </div>
                 </div>
@@ -390,7 +391,7 @@ export function RiskPredictor() {
                 </div>
                 {schema && (
                   <CardDescription>
-                    Based on {schema.primary_feature_count} visible inputs with {schema.measurement_flag_count} derived model flags.
+                    Based on {schema.primary_feature_count} visible inputs with {schema.derived_feature_count} derived features and {schema.measurement_flag_count} measured flags.
                   </CardDescription>
                 )}
               </CardHeader>

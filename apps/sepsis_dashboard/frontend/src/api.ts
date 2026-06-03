@@ -6,7 +6,8 @@ type AppConfig = {
 
 function getConfig(): AppConfig {
   const runtimeConfig = (window as any).__APP_CONFIG__ ?? {};
-  const baseUrl = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, "");
+  const backendUrl = (window as any).__BACKEND_URL__ ?? "http://localhost:8000";
+  const baseUrl = `${backendUrl}/api`;
 
   return {
     appName: runtimeConfig.appName || "sepsis_dashboard",

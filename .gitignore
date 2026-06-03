@@ -1,5 +1,6 @@
-# Datasets
-Datasets/
+# Datasets (raw data too large for git)
+/Datasets/raw/
+/Datasets/processed/*.csv
 
 # 2. Python Virtual Environments
 venv/
@@ -223,6 +224,7 @@ __marimo__/
 # Node / Frontend
 node_modules/
 .npm
+.parcel-cache/
 /apps/sepsis_dashboard/frontend/dist/
 /apps/sepsis_dashboard/frontend/build/
 *.log
