@@ -4,3 +4,6 @@ scikit-learn
 numpy
 xgboost
 flask
+shap
+matplotlib
+seaborn

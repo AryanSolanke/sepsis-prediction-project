@@ -321,5 +321,6 @@ class SepsisRequestHandler(BaseHTTPRequestHandler):
         else: self.send_response(404); self.end_headers()
 
 if __name__ == "__main__":
-    _log("Starting Cascade Backend on port 8000...")
-    HTTPServer(("0.0.0.0", 8000), SepsisRequestHandler).serve_forever()
+    port = int(os.environ.get("PORT", 8000))
+    _log(f"Starting Cascade Backend on port {port}...")
+    HTTPServer(("0.0.0.0", port), SepsisRequestHandler).serve_forever()
