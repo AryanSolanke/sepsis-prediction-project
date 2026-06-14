@@ -1,6 +1,6 @@
 # Datasets (raw data too large for git)
 /Datasets/raw/
-/Datasets/processed/*.csv
+/Datasets/processed/
 
 # 2. Python Virtual Environments
 venv/
@@ -229,7 +229,10 @@ node_modules/
 *.log
 .eslintcache
 
+# Kaggle downloaded data
+/prediction-of-sepsis/
+/prediction-of-sepsis.zip
+
 # Local model artifacts / caches
-/models/
-/model_training/models/
+# /models/ (Removing ignore to allow deployment of production models)
 *.joblib

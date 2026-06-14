@@ -1,0 +1,6 @@
+{
+    "optimal_threshold": 0.448,
+    "lead_time_hours": 12,
+    "auc_score": 0.818,
+    "features_count": 147
+}
