@@ -40,34 +40,14 @@ _CACHED_SIEVE: Any | None = None
 _CACHED_VERIFIER: Any | None = None
 _CACHED_FEATURES: list[str] | None = None
 _CACHED_THRESHOLD: float | None = None
-_CACHED_METRICS: dict[str, Any] | None = None
 _SUMMARY_CACHE: dict[str, Any] | None = None
 _SCHEMA_CACHE: dict[str, Any] | None = None
 _DATASET_COLUMNS_CACHE: dict[Path, set[str]] = {}
 _RESOLVED_DATA_PATH: Path | None = None
 _RESOLVED_ARTIFACT_BUNDLE: dict[str, Any] | None = None
 
-# REMOVED: ICULOS and HospAdmTime to eliminate temporal bias
 PATIENT_CONTEXT_FIELDS = {"Age", "Gender", "Unit1"}
 VITAL_SIGN_FIELDS = {"HR", "O2Sat", "Temp", "SBP", "MAP", "DBP", "Resp"}
-BASE_MODEL_INPUT_FIELDS = {
-    "HR", "O2Sat", "Temp", "SBP", "MAP", "DBP", "Resp", "HCO3", "FiO2", "pH", 
-    "PaCO2", "BUN", "Calcium", "Chloride", "Creatinine", "Glucose", "Lactate", 
-    "Magnesium", "Phosphate", "Potassium", "Hct", "Hgb", "WBC", "Platelets", 
-    "Age", "Gender", "Unit1"
-}
-
-ENGINEERED_FEATURES = {
-    "Shock_Index", "Pulse_Pressure", "MAP_SBP_Ratio", "DBP_MAP_Ratio",
-    "Temp_Deviation", "Fever", "Hypothermia", "HR_Deviation", "Tachycardia",
-    "Bradycardia", "Resp_Distress", "Low_O2Sat", "Lactate_WBC", "BUN_Creat_Ratio",
-    "Lactate_HR", "pH_Deviation", "Acidosis", "Elevated_Lactate", "Elevated_WBC",
-    "Low_Platelets", "Elevated_BUN", "Elevated_Creatinine", "Glucose_Deviation",
-    "Elevated_Glucose", "qSOFA_Resp", "qSOFA_BP", "qSOFA_Score", "MEWS_HR",
-    "MEWS_SBP", "MEWS_Temp", "MEWS_Score", "Shock_Infection",
-    "Hemodynamic_Instability", "Organ_Dysfunction", "Critical_Flags",
-    "Unit1_Unknown"
-}
 
 FIELD_LABELS = {
     "HR": "Heart Rate", "O2Sat": "Oxygen Saturation", "Temp": "Temperature",
@@ -160,12 +140,6 @@ def _load_feature_names() -> list[str]:
     _, features, _ = _load_model_and_features()
     return features
 
-def _read_dataset_columns(path: Path) -> set[str]:
-    if path in _DATASET_COLUMNS_CACHE: return _DATASET_COLUMNS_CACHE[path]
-    columns = set(pd.read_csv(path, nrows=0).columns.tolist())
-    _DATASET_COLUMNS_CACHE[path] = columns
-    return columns
-
 def _resolve_data_path(features: list[str]) -> Path | None:
     global _RESOLVED_DATA_PATH
     if _RESOLVED_DATA_PATH is not None: return _RESOLVED_DATA_PATH
@@ -189,14 +163,9 @@ def get_prediction_schema() -> dict[str, Any]:
     df = _load_data()
     _, features, _ = _load_model_and_features()
     
-    # UI Logic: Only show features that have explicit human-readable labels
-    # This automatically excludes _zscore, _adv_, and internal engineered noise
     input_features = [f for f in features if f in FIELD_LABELS]
-    
-    _log(f"Building schema for {len(input_features)} human-readable features")
     fields = []
     for feature in input_features:
-        # Get stats from data if available, otherwise use clinical defaults
         if df is not None and feature in df.columns:
             series = pd.to_numeric(df[feature], errors="coerce").dropna()
             min_v, max_v, mean_v = float(series.min()), float(series.max()), float(series.mean())
@@ -204,24 +173,13 @@ def get_prediction_schema() -> dict[str, Any]:
             min_v, max_v, mean_v = 0.0, 200.0, 0.0
             
         fields.append({
-            "name": feature, 
-            "label": FIELD_LABELS[feature],
-            "group": _group_for_feature(feature), 
-            "kind": "number",
-            "unit": FIELD_UNITS.get(feature, ""), 
-            "default_value": round(mean_v, 2),
-            "min_value": round(min_v, 2), 
-            "max_value": round(max_v, 2), 
-            "step": 0.1
+            "name": feature, "label": FIELD_LABELS[feature],
+            "group": _group_for_feature(feature), "kind": "number",
+            "unit": FIELD_UNITS.get(feature, ""), "default_value": round(mean_v, 2),
+            "min_value": round(min_v, 2), "max_value": round(max_v, 2), "step": 0.1
         })
 
-    _SCHEMA_CACHE = {
-        "model_name": "Two-Stage Cascade (Physiological Only)", 
-        "feature_count": len(features), 
-        "primary_feature_count": len(input_features),
-        "fields": fields, 
-        "input_groups": INPUT_GROUPS
-    }
+    _SCHEMA_CACHE = {"model_name": "Two-Stage Cascade", "feature_count": len(features), "fields": fields, "input_groups": INPUT_GROUPS}
     return _SCHEMA_CACHE
 
 def _group_for_feature(feature: str) -> str:
@@ -251,10 +209,9 @@ def _derive_engineered_features(frame: pd.DataFrame) -> pd.DataFrame:
     derived["qSOFA_BP"] = (sbp <= 100.0).astype(float)
     derived["qSOFA_Score"] = derived["qSOFA_Resp"] + derived["qSOFA_BP"]
 
-    # Production Model Support
     key_features = ['HR', 'MAP', 'SBP', 'Resp', 'O2Sat', 'Temp', 'Lactate', 'Glucose']
     for col in key_features:
-        derived[f"{col}_zscore"] = 0.0 # Neutral baseline
+        derived[f"{col}_zscore"] = 0.0 
         derived[f"{col}_adv_12h_mean"] = derived[col] if col in derived else np.nan
         derived[f"{col}_adv_12h_max"] = derived[col] if col in derived else np.nan
         derived[f"{col}_adv_12h_min"] = derived[col] if col in derived else np.nan
@@ -297,7 +254,7 @@ def get_summary_stats() -> dict[str, Any]:
     return _SUMMARY_CACHE
 
 def get_cohort_analysis(cohort_feature: str = "AgeGroup") -> list[dict[str, Any]]:
-    return [] # Simplified for Cascade
+    return []
 
 def get_feature_importance(top_n: int = 10) -> list[dict[str, Any]]:
     model, features, _ = _load_model_and_features()
@@ -316,10 +273,40 @@ class SepsisRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET, POST")
         super().end_headers()
 
+    def _send_json(self, data):
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps(_json_safe(data)).encode('utf-8'))
+
+    def _serve_static(self, path: str) -> None:
+        if not FRONTEND_DIST_DIR.exists():
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write(b"Frontend not built.")
+            return
+
+        clean = path.lstrip("/") or "index.html"
+        file_path = FRONTEND_DIST_DIR / clean
+        if not file_path.exists():
+            file_path = FRONTEND_DIST_DIR / "index.html"
+
+        mime_type, _ = mimetypes.guess_type(str(file_path))
+        self.send_response(200)
+        self.send_header("Content-Type", mime_type or "application/octet-stream")
+        self.send_header("Content-Length", str(file_path.stat().st_size))
+        self.end_headers()
+        with open(file_path, "rb") as f:
+            self.wfile.write(f.read())
+
     def do_GET(self):
         if self.path == "/api/summary": self._send_json(get_summary_stats())
         elif self.path == "/api/health": self._send_json({"status": "ok"})
-        else: self.send_response(404); self.end_headers()
+        elif self.path.startswith("/api/feature-importance"):
+            params = parse_qs(urlparse(self.path).query)
+            top_n = int(params.get("top_n", ["10"])[0])
+            self._send_json(get_feature_importance(top_n))
+        else: self._serve_static(self.path)
 
     def do_POST(self):
         content_len = int(self.headers.get('Content-Length', 0))
@@ -327,16 +314,11 @@ class SepsisRequestHandler(BaseHTTPRequestHandler):
         if self.path == "/api/predict": self._send_json(predict_sepsis(body))
         elif self.path == "/api/rpc":
             func = body.get("func")
+            args = body.get("args", {})
             if func == "get_prediction_schema": self._send_json(get_prediction_schema())
             elif func == "get_summary_stats": self._send_json(get_summary_stats())
-            elif func == "get_feature_importance": self._send_json(get_feature_importance())
+            elif func == "get_feature_importance": self._send_json(get_feature_importance(**args))
         else: self.send_response(404); self.end_headers()
-
-    def _send_json(self, data):
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.end_headers()
-        self.wfile.write(json.dumps(_json_safe(data)).encode('utf-8'))
 
 if __name__ == "__main__":
     _log("Starting Cascade Backend on port 8000...")
