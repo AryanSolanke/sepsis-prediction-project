@@ -59,7 +59,8 @@ FIELD_LABELS = {
     "Glucose": "Glucose", "Lactate": "Lactate", "Magnesium": "Magnesium",
     "Phosphate": "Phosphate", "Potassium": "Potassium", "Hct": "Hematocrit",
     "Hgb": "Hemoglobin", "WBC": "White Blood Cell Count", "Platelets": "Platelets",
-    "Age": "Age", "Gender": "Gender", "Unit1": "Unit1 Indicator"
+    "Age": "Age", "Gender": "Gender", "Unit1": "Unit1 Indicator",
+    "Unspecified_ICU_Type": "ICU Admission Source Unspecified"
 }
 FIELD_UNITS = {
     "HR": "bpm", "O2Sat": "%", "Temp": "deg C", "SBP": "mmHg", "MAP": "mmHg",
@@ -68,7 +69,7 @@ FIELD_UNITS = {
     "Chloride": "mmol/L", "Creatinine": "mg/dL", "Glucose": "mg/dL",
     "Lactate": "mmol/L", "Magnesium": "mg/dL", "Phosphate": "mg/dL",
     "Potassium": "mmol/L", "Hct": "%", "Hgb": "g/dL", "WBC": "10^9/L",
-    "Platelets": "10^9/L", "Age": "years"
+    "Platelets": "10^9/L", "Age": "years", "Unspecified_ICU_Type": "Binary"
 }
 
 INPUT_GROUPS = [
@@ -233,20 +234,62 @@ def predict_sepsis(patient_data: dict[str, Any]) -> dict[str, Any]:
     input_frame = _derive_engineered_features(input_frame)
     prob = float(model.predict_proba(input_frame[features])[0, 1])
     
+    importances = model.feature_importances_
+    contributor_values = input_frame[features].iloc[0].to_dict()
+    paired = [(features[i], float(contributor_values.get(features[i], 0)), float(importances[i])) for i in range(len(features))]
+    paired.sort(key=lambda x: x[2], reverse=True)
+    top_contributors = [
+        {"feature": f, "value": v if not (isinstance(v, float) and (np.isnan(v) or np.isinf(v))) else None, "contribution_score": s}
+        for f, v, s in paired[:5]
+    ]
+    
     return {
         "sepsis_probability": prob,
         "risk_level": "High" if prob >= 0.5 else ("Medium" if prob >= 0.2 else "Low"),
-        "threshold_used": threshold
+        "threshold_used": threshold,
+        "top_contributors": top_contributors
     }
+
+def get_health_status() -> dict[str, Any]:
+    return {"status": "ok"}
+
+def _dispatch_rpc(func_name: str, args: dict[str, Any]) -> Any:
+    if func_name == "get_prediction_schema":
+        return get_prediction_schema()
+    elif func_name == "get_summary_stats":
+        return get_summary_stats()
+    elif func_name == "get_feature_importance":
+        return get_feature_importance(**args)
+    elif func_name == "get_cohort_analysis":
+        return get_cohort_analysis(**args)
+    elif func_name == "predict_sepsis":
+        return predict_sepsis(**args)
+    else:
+        raise ApiError(f"Unknown RPC function: {func_name}")
 
 def get_summary_stats() -> dict[str, Any]:
     global _SUMMARY_CACHE
     if _SUMMARY_CACHE: return _SUMMARY_CACHE
+    precomputed = CACHE_DIR / "summary_stats.json"
+    if precomputed.exists():
+        with open(precomputed, 'r') as f:
+            _SUMMARY_CACHE = json.load(f)
+        return _SUMMARY_CACHE
     bundle = _resolve_artifact_bundle()
     with open(bundle["config"], 'r') as f: config = json.load(f)
     df = _load_data()
+    if df is not None:
+        sepsis_rate = float(df["SepsisLabel"].mean()) if "SepsisLabel" in df.columns else 0.0
+        avg_age = float(df["Age"].mean()) if "Age" in df.columns else 0.0
+        total_patients = int(df["Patient_ID"].nunique()) if "Patient_ID" in df.columns else len(df)
+    else:
+        sepsis_rate = 0.0
+        avg_age = 0.0
+        total_patients = 40335
     _SUMMARY_CACHE = {
-        "total_patients": int(df["Patient_ID"].nunique()) if df is not None else 40335,
+        "total_patients": total_patients,
+        "sepsis_rate": sepsis_rate,
+        "avg_age": avg_age,
         "auc": config.get("auc_score", 0.8180),
         "threshold": config.get("optimal_threshold", 0.448),
         "model_name": "Two-Stage Cascade (XGBoost)"
@@ -254,7 +297,39 @@ def get_summary_stats() -> dict[str, Any]:
     return _SUMMARY_CACHE
 
 def get_cohort_analysis(cohort_feature: str = "AgeGroup") -> list[dict[str, Any]]:
-    return []
+    cache_file = CACHE_DIR / f"cohorts_{cohort_feature}.json"
+    if cache_file.exists():
+        with open(cache_file, 'r') as f:
+            return json.load(f)
+    df = _load_data()
+    if df is None:
+        return []
+    if cohort_feature not in df.columns:
+        return []
+    cohorts = []
+    for val in sorted(df[cohort_feature].dropna().unique()):
+        mask = df[cohort_feature] == val
+        subset = df[mask]
+        total = len(subset)
+        sepsis_cases = int(subset["SepsisLabel"].sum()) if "SepsisLabel" in subset.columns else 0
+        recall = 0.0
+        precision = 0.0
+        if sepsis_cases > 0:
+            preds = subset.get("Prediction", None)
+            if preds is not None:
+                tp = ((preds == 1) & (subset["SepsisLabel"] == 1)).sum()
+                fn = ((preds == 0) & (subset["SepsisLabel"] == 1)).sum()
+                fp = ((preds == 1) & (subset["SepsisLabel"] == 0)).sum()
+                recall = float(tp / (tp + fn)) if (tp + fn) > 0 else 0.0
+                precision = float(tp / (tp + fp)) if (tp + fp) > 0 else 0.0
+        cohorts.append({
+            "cohort": str(val),
+            "count": total,
+            "sepsis_cases": sepsis_cases,
+            "recall": recall,
+            "precision": precision
+        })
+    return cohorts
 
 def get_feature_importance(top_n: int = 10) -> list[dict[str, Any]]:
     model, features, _ = _load_model_and_features()
@@ -318,6 +393,9 @@ class SepsisRequestHandler(BaseHTTPRequestHandler):
             if func == "get_prediction_schema": self._send_json(get_prediction_schema())
             elif func == "get_summary_stats": self._send_json(get_summary_stats())
             elif func == "get_feature_importance": self._send_json(get_feature_importance(**args))
+            elif func == "get_cohort_analysis": self._send_json(get_cohort_analysis(**args))
+            elif func == "predict_sepsis": self._send_json(predict_sepsis(**args))
+            else: self._send_json({"error": f"Unknown RPC function: {func}"})
         else: self.send_response(404); self.end_headers()
 
 if __name__ == "__main__":

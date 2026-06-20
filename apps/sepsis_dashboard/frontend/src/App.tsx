@@ -90,6 +90,46 @@ export default function App() {
         </div>
       </aside>
 
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div className="md:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-72 bg-card/95 backdrop-blur-xl border-r border-white/10 shadow-2xl animate-in slide-in-from-left-2 duration-300">
+            <div className="p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 ring-1 ring-primary/40">
+                  <RiPulseLine className="h-6 w-6 text-primary animate-pulse" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold font-heading tracking-tight">SepsisGuard</h1>
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Diagnostic Intelligence</p>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)}>
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <nav className="flex-1 px-3 space-y-1 mt-4">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => { setActiveTab(item.id); setIsSidebarOpen(false); }}
+                  className={cn(
+                    "w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
+                    activeTab === item.id
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                      : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
+          </aside>
+        </div>
+      )}
+
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Mobile Header */}
