@@ -219,7 +219,7 @@ def _derive_engineered_features(frame: pd.DataFrame) -> pd.DataFrame:
     hct = _series_or_nan(derived, "Hct")
     hgb = _series_or_nan(derived, "Hgb")
 
-    derived["Unspecified_ICU_Type"] = 0.0
+    derived["Unit1_Unknown"] = 0.0
 
     temporal_cols = ['HR', 'MAP', 'SBP', 'Resp', 'O2Sat', 'Temp', 'Lactate', 'Creatinine', 'WBC', 'Glucose', 'Platelets']
     for col in temporal_cols:
