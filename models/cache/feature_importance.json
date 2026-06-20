@@ -1,0 +1,366 @@
+[
+  {
+    "feature": "ICULOS_Hours",
+    "importance": 0.16377991437911987
+  },
+  {
+    "feature": "ICULOS",
+    "importance": 0.062106627970933914
+  },
+  {
+    "feature": "Critical_Flags",
+    "importance": 0.05709640681743622
+  },
+  {
+    "feature": "Organ_Dysfunction",
+    "importance": 0.05499430373311043
+  },
+  {
+    "feature": "qSOFA_Score",
+    "importance": 0.04906107112765312
+  },
+  {
+    "feature": "MEWS_Score",
+    "importance": 0.04813120514154434
+  },
+  {
+    "feature": "FiO2",
+    "importance": 0.038999974727630615
+  },
+  {
+    "feature": "FiO2_Measured",
+    "importance": 0.030097022652626038
+  },
+  {
+    "feature": "Lactate_Measured",
+    "importance": 0.023655492812395096
+  },
+  {
+    "feature": "Temp",
+    "importance": 0.022482402622699738
+  },
+  {
+    "feature": "Unit1",
+    "importance": 0.02225576713681221
+  },
+  {
+    "feature": "Shock_Index",
+    "importance": 0.016290538012981415
+  },
+  {
+    "feature": "HospAdmTime",
+    "importance": 0.014620525762438774
+  },
+  {
+    "feature": "Resp_Distress",
+    "importance": 0.01420549489557743
+  },
+  {
+    "feature": "Fever",
+    "importance": 0.014197823591530323
+  },
+  {
+    "feature": "Elevated_BUN",
+    "importance": 0.013747422024607658
+  },
+  {
+    "feature": "BUN",
+    "importance": 0.01200469397008419
+  },
+  {
+    "feature": "Lactate",
+    "importance": 0.011198218911886215
+  },
+  {
+    "feature": "Resp",
+    "importance": 0.010681873187422752
+  },
+  {
+    "feature": "Creatinine",
+    "importance": 0.010218613781034946
+  },
+  {
+    "feature": "Temp_Deviation",
+    "importance": 0.010088003240525723
+  },
+  {
+    "feature": "SBP",
+    "importance": 0.010020716115832329
+  },
+  {
+    "feature": "MAP_Measured",
+    "importance": 0.0098132798448205
+  },
+  {
+    "feature": "Lactate_WBC",
+    "importance": 0.008505681529641151
+  },
+  {
+    "feature": "pH_Measured",
+    "importance": 0.008058487437665462
+  },
+  {
+    "feature": "pH_Deviation",
+    "importance": 0.007791895419359207
+  },
+  {
+    "feature": "Low_Platelets",
+    "importance": 0.007677373941987753
+  },
+  {
+    "feature": "PaCO2_Measured",
+    "importance": 0.0074538555927574635
+  },
+  {
+    "feature": "Lactate_HR",
+    "importance": 0.007450827397406101
+  },
+  {
+    "feature": "HR",
+    "importance": 0.007400276139378548
+  },
+  {
+    "feature": "MAP",
+    "importance": 0.0070738219656050205
+  },
+  {
+    "feature": "DBP",
+    "importance": 0.007059560157358646
+  },
+  {
+    "feature": "WBC",
+    "importance": 0.0070114219561219215
+  },
+  {
+    "feature": "Pulse_Pressure",
+    "importance": 0.00694031547755003
+  },
+  {
+    "feature": "Calcium",
+    "importance": 0.006503914948552847
+  },
+  {
+    "feature": "Hgb",
+    "importance": 0.006449442356824875
+  },
+  {
+    "feature": "pH",
+    "importance": 0.006414669565856457
+  },
+  {
+    "feature": "Potassium",
+    "importance": 0.006122481543570757
+  },
+  {
+    "feature": "SBP_Measured",
+    "importance": 0.006095748394727707
+  },
+  {
+    "feature": "Platelets",
+    "importance": 0.005973263178020716
+  },
+  {
+    "feature": "Hct_Measured",
+    "importance": 0.005915879737585783
+  },
+  {
+    "feature": "MAP_SBP_Ratio",
+    "importance": 0.0056656296364963055
+  },
+  {
+    "feature": "Elevated_Glucose",
+    "importance": 0.005586701910942793
+  },
+  {
+    "feature": "Age",
+    "importance": 0.005564425606280565
+  },
+  {
+    "feature": "Temp_Measured",
+    "importance": 0.005530398804694414
+  },
+  {
+    "feature": "DBP_Measured",
+    "importance": 0.005391190759837627
+  },
+  {
+    "feature": "Late_ICULOS",
+    "importance": 0.005196383222937584
+  },
+  {
+    "feature": "Phosphate",
+    "importance": 0.005172620993107557
+  },
+  {
+    "feature": "Early_ICULOS",
+    "importance": 0.005149482283741236
+  },
+  {
+    "feature": "BUN_Creat_Ratio",
+    "importance": 0.005099548492580652
+  },
+  {
+    "feature": "Gender",
+    "importance": 0.00505651393905282
+  },
+  {
+    "feature": "Glucose",
+    "importance": 0.00493670953437686
+  },
+  {
+    "feature": "Elevated_Creatinine",
+    "importance": 0.004926896654069424
+  },
+  {
+    "feature": "HCO3",
+    "importance": 0.004881410859525204
+  },
+  {
+    "feature": "Hct",
+    "importance": 0.004821023438125849
+  },
+  {
+    "feature": "Resp_Measured",
+    "importance": 0.004813590552657843
+  },
+  {
+    "feature": "Glucose_Deviation",
+    "importance": 0.004793107509613037
+  },
+  {
+    "feature": "Acidosis",
+    "importance": 0.004705553874373436
+  },
+  {
+    "feature": "PaCO2",
+    "importance": 0.004675924312323332
+  },
+  {
+    "feature": "Chloride",
+    "importance": 0.004562546964734793
+  },
+  {
+    "feature": "Magnesium",
+    "importance": 0.0040860227309167385
+  },
+  {
+    "feature": "MEWS_Temp",
+    "importance": 0.003945462871342897
+  },
+  {
+    "feature": "Elevated_WBC",
+    "importance": 0.003808453679084778
+  },
+  {
+    "feature": "Hgb_Measured",
+    "importance": 0.0036411553155630827
+  },
+  {
+    "feature": "O2Sat",
+    "importance": 0.0036170606035739183
+  },
+  {
+    "feature": "Potassium_Measured",
+    "importance": 0.003538550576195121
+  },
+  {
+    "feature": "DBP_MAP_Ratio",
+    "importance": 0.0034318645484745502
+  },
+  {
+    "feature": "HR_Measured",
+    "importance": 0.0033703865483403206
+  },
+  {
+    "feature": "WBC_Measured",
+    "importance": 0.003174754325300455
+  },
+  {
+    "feature": "Glucose_Measured",
+    "importance": 0.0029929473530501127
+  },
+  {
+    "feature": "Chloride_Measured",
+    "importance": 0.0029029869474470615
+  },
+  {
+    "feature": "HR_Deviation",
+    "importance": 0.0027852794155478477
+  },
+  {
+    "feature": "Calcium_Measured",
+    "importance": 0.0027022790163755417
+  },
+  {
+    "feature": "HCO3_Measured",
+    "importance": 0.0026191927026957273
+  },
+  {
+    "feature": "Shock_Infection",
+    "importance": 0.0026123023126274347
+  },
+  {
+    "feature": "O2Sat_Measured",
+    "importance": 0.0024426213931292295
+  },
+  {
+    "feature": "Magnesium_Measured",
+    "importance": 0.0018671859288588166
+  },
+  {
+    "feature": "Phosphate_Measured",
+    "importance": 0.001659165951423347
+  },
+  {
+    "feature": "Hemodynamic_Instability",
+    "importance": 0.0009446050971746445
+  },
+  {
+    "feature": "MEWS_SBP",
+    "importance": 0.0009161363122984767
+  },
+  {
+    "feature": "Hypothermia",
+    "importance": 0.0007655046647414565
+  },
+  {
+    "feature": "BUN_Measured",
+    "importance": 0.0
+  },
+  {
+    "feature": "Creatinine_Measured",
+    "importance": 0.0
+  },
+  {
+    "feature": "Platelets_Measured",
+    "importance": 0.0
+  },
+  {
+    "feature": "Tachycardia",
+    "importance": 0.0
+  },
+  {
+    "feature": "Bradycardia",
+    "importance": 0.0
+  },
+  {
+    "feature": "Low_O2Sat",
+    "importance": 0.0
+  },
+  {
+    "feature": "Elevated_Lactate",
+    "importance": 0.0
+  },
+  {
+    "feature": "qSOFA_Resp",
+    "importance": 0.0
+  },
+  {
+    "feature": "qSOFA_BP",
+    "importance": 0.0
+  },
+  {
+    "feature": "MEWS_HR",
+    "importance": 0.0
+  }
+]
