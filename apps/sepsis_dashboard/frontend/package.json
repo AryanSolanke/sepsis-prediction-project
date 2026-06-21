@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "parcel index.html --port 5173",
-    "build": "parcel build index.html --dist-dir dist",
+    "build": "parcel build index.html --dist-dir dist && copy /Y robots.txt dist\\ && copy /Y sitemap.xml dist\\",
     "preview": "npx serve dist -p 5173"
   },
   "dependencies": {
@@ -19,6 +19,8 @@
     "tailwind-merge": "^2.0.0"
   },
   "devDependencies": {
+    "@parcel/packager-raw-url": "^2.16.4",
+    "@parcel/transformer-jsonld": "^2.16.4",
     "@tailwindcss/forms": "^0.5.11",
     "@types/react": "^19.2.16",
     "@types/react-dom": "^19.2.3",
