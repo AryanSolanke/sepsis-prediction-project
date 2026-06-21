@@ -167,7 +167,7 @@ export default function App() {
                 <div className="flex flex-wrap gap-4 pt-4">
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm">
                     <ShieldAlert className="h-4 w-4 text-rose-500" />
-                    <span className="text-xs font-medium text-slate-300">Predictive Accuracy: 84%</span>
+                    <span className="text-xs font-medium text-slate-300">ROC AUC: 0.818</span>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm">
                     <Heart className="h-4 w-4 text-blue-500" />
