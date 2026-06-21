@@ -10,7 +10,7 @@ All three scripts:
 
 - read `Datasets/processed/sepsis_icu_cleaned.csv`
 - split by `Patient_ID` to reduce leakage
-- save trained artifacts to `model_training/models`
+- save trained artifacts to `models/` (repo root)
 - write metrics and training history alongside the model checkpoint
 - tune the final decision threshold on the validation set instead of blindly using `0.50`
 
@@ -54,27 +54,27 @@ python model_training\rnn_model.py --loss focal --class-weight-strategy sqrt --t
 
 Feedforward NN:
 
-- `model_training/models/sepsis_nn.pt`
-- `model_training/models/nn_feature_names.joblib`
-- `model_training/models/nn_scaler.joblib`
-- `model_training/models/nn_metrics.json`
-- `model_training/models/nn_history.json`
+- `models/sepsis_nn.pt`
+- `models/nn_feature_names.joblib`
+- `models/nn_scaler.joblib`
+- `models/nn_metrics.json`
+- `models/nn_history.json`
 
 Temporal CNN:
 
-- `model_training/models/sepsis_cnn.pt`
-- `model_training/models/cnn_feature_names.joblib`
-- `model_training/models/cnn_scaler.joblib`
-- `model_training/models/cnn_metrics.json`
-- `model_training/models/cnn_history.json`
+- `models/sepsis_cnn.pt`
+- `models/cnn_feature_names.joblib`
+- `models/cnn_scaler.joblib`
+- `models/cnn_metrics.json`
+- `models/cnn_history.json`
 
 Recurrent NN:
 
-- `model_training/models/sepsis_rnn.pt`
-- `model_training/models/rnn_feature_names.joblib`
-- `model_training/models/rnn_scaler.joblib`
-- `model_training/models/rnn_metrics.json`
-- `model_training/models/rnn_history.json`
+- `models/sepsis_rnn.pt`
+- `models/rnn_feature_names.joblib`
+- `models/rnn_scaler.joblib`
+- `models/rnn_metrics.json`
+- `models/rnn_history.json`
 
 ## Dependency Note
 

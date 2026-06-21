@@ -144,7 +144,7 @@ The Two-Stage Cascade model reached a performance of **0.8180 ROC AUC** and **29
 
 ### Key Finding 2: Sieve Efficiency
 *   The Stage 1 "Sieve" successfully reduced the search space by ~20%, allowing the Stage 2 "Verifier" to focus on the top 1 million difficult cases. 
-*   However, features like `Unit1_Unknown` still rank in the top 5, suggesting a persistent "Administrative Bias" where the hospital system source is a proxy for severity.
+*   However, features like `ICU Admission Source Unspecified` still rank in the top 5, suggesting a persistent "Administrative Bias" where the hospital system source is a proxy for severity.
 
 ### Key Finding 3: Vital Stability vs. Labs
 *   Features like `Temp_adv_12h_max` and `Resp_adv_12h_mean` rank significantly higher than raw vitals.
