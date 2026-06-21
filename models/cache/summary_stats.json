@@ -2,13 +2,7 @@
   "total_patients": 40335,
   "sepsis_rate": 0.017984772600473393,
   "avg_age": 62.0094783088799,
-  "accuracy": 0.958034976590471,
-  "auc": 0.8320951397275,
-  "pr_auc": 0.10299847737679534,
-  "precision": 0.13940657184894556,
-  "recall": 0.2937984496124031,
-  "f1": 0.18909030434059537,
-  "model_name": "model",
-  "evaluation_scope": "saved_patient_level_holdout",
-  "threshold_used": 0.8200000000000002
+  "auc": 0.818,
+  "threshold": 0.448,
+  "model_name": "Two-Stage Cascade (XGBoost)"
 }
