@@ -158,18 +158,34 @@ def _load_data() -> pd.DataFrame | None:
     _CACHED_DF = pd.read_csv(path)
     return _CACHED_DF
 
+DEFAULT_FIELD_STATS: dict[str, tuple[float, float, float]] = {
+    "HR": (20.0, 280.0, 84.34), "O2Sat": (50.0, 100.0, 97.18),
+    "Temp": (26.6, 42.22, 36.87), "SBP": (40.0, 250.0, 123.55),
+    "MAP": (30.0, 200.0, 82.54), "DBP": (20.0, 160.0, 63.5),
+    "Resp": (4.0, 60.0, 18.7), "HCO3": (5.0, 55.0, 24.15),
+    "FiO2": (0.2, 1.0, 0.33), "pH": (6.62, 7.93, 7.39),
+    "PaCO2": (10.0, 100.0, 40.24), "BUN": (1.0, 268.0, 21.91),
+    "Calcium": (1.0, 20.0, 8.09), "Chloride": (26.0, 145.0, 105.85),
+    "Creatinine": (0.1, 29.86, 1.33), "Glucose": (10.0, 988.0, 130.58),
+    "Lactate": (0.2, 28.9, 1.69), "Magnesium": (0.2, 9.8, 2.03),
+    "Phosphate": (0.2, 18.8, 3.43), "Potassium": (1.0, 10.0, 4.08),
+    "Hct": (5.5, 71.7, 31.59), "Hgb": (2.2, 30.0, 10.56),
+    "WBC": (0.1, 296.1, 11.05), "Platelets": (1.0, 2322.0, 201.92),
+    "Age": (14.0, 100.0, 62.01), "Gender": (0.0, 1.0, 0.56),
+    "Unit1": (-1.0, 1.0, -0.09),
+}
+
 def get_prediction_schema() -> dict[str, Any]:
     global _SCHEMA_CACHE
     if _SCHEMA_CACHE is not None: return _SCHEMA_CACHE
-    df = _load_data()
     _, features, _ = _load_model_and_features()
     
     input_features = [f for f in features if f in FIELD_LABELS]
     fields = []
     for feature in input_features:
-        if df is not None and feature in df.columns:
-            series = pd.to_numeric(df[feature], errors="coerce").dropna()
-            min_v, max_v, mean_v = float(series.min()), float(series.max()), float(series.mean())
+        stats = DEFAULT_FIELD_STATS.get(feature)
+        if stats is not None:
+            min_v, max_v, mean_v = stats
         else:
             min_v, max_v, mean_v = 0.0, 200.0, 0.0
             
@@ -180,7 +196,13 @@ def get_prediction_schema() -> dict[str, Any]:
             "min_value": round(min_v, 2), "max_value": round(max_v, 2), "step": 0.1
         })
 
-    _SCHEMA_CACHE = {"model_name": "Two-Stage Cascade", "feature_count": len(features), "fields": fields, "input_groups": INPUT_GROUPS}
+    _SCHEMA_CACHE = {
+        "model_name": "Two-Stage Cascade", "feature_count": len(features),
+        "primary_feature_count": len(fields),
+        "derived_feature_count": len(features) - len(fields) - sum(1 for f in features if f.endswith("_Measured")),
+        "measurement_flag_count": sum(1 for f in features if f.endswith("_Measured")),
+        "fields": fields, "input_groups": INPUT_GROUPS,
+    }
     return _SCHEMA_CACHE
 
 def _group_for_feature(feature: str) -> str:
