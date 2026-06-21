@@ -236,3 +236,9 @@ node_modules/
 # Local model artifacts / caches
 # /models/ (Removing ignore to allow deployment of production models)
 *.joblib
+
+# Training artifacts (images, CSVs, reports)
+*.png
+*.csv
+model_training/Performance_eval/
+model_training/model_reports.txt
