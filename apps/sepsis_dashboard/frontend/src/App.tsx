@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Users, Activity, Menu, X, ShieldAlert, Heart, Github, Terminal } from 'lucide-react';
+import { LayoutDashboard, Users, Activity, Menu, X, BarChart3, Heart, Github, Terminal } from 'lucide-react';
 import { RiPulseLine } from 'react-icons/ri';
 import { SiPython, SiReact, SiScikitlearn } from 'react-icons/si';
 import { Button } from './components/ui/button';
@@ -166,7 +166,7 @@ export default function App() {
                 </p>
                 <div className="flex flex-wrap gap-4 pt-4">
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm">
-                    <ShieldAlert className="h-4 w-4 text-rose-500" />
+                    <BarChart3 className="h-4 w-4 text-emerald-500" />
                     <span className="text-xs font-medium text-slate-300">ROC AUC: 0.818</span>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm">
