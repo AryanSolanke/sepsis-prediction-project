@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../co
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { Activity, Users, Percent, ShieldAlert, Target } from 'lucide-react';
+import { Activity, Users, Percent, Target } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export function Overview() {
@@ -49,7 +49,7 @@ export function Overview() {
     {
       label: 'Sepsis Prevalence',
       value: `${(stats?.sepsis_rate * 100).toFixed(1)}%`,
-      icon: ShieldAlert,
+      icon: Percent,
       color: 'text-rose-500',
       bg: 'bg-rose-500/10',
       description: 'Active cases in dataset'
@@ -64,7 +64,7 @@ export function Overview() {
     },
     {
       label: 'Model AUC',
-      value: stats?.auc?.toFixed(3),
+      value: `${(stats?.auc * 100).toFixed(1)}%`,
       icon: Target,
       color: 'text-emerald-500',
       bg: 'bg-emerald-500/10',
